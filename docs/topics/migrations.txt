@@ -467,6 +467,73 @@ You can pass a second callable to
 want executed when migrating backwards. If this callable is omitted, migrating
 backwards will raise an exception.
 
+Dealing with data migrations and multiple databases
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+One of the challenges that can be encountered is figuring out whether or
+not to run a migration when using multiple databases.
+
+For example, you may want to **only** run a migration against a particular
+database.
+
+In order to do that you can filter inside of your data migration by
+looking at the ``schema_editor.connection.alias`` variable.  However it is better
+to have your ``dbrouter`` leverage the same ``allow_migrate`` call by making
+the following method in your router:
+
+        class MyRouter(object):
+
+            def allow_migrate(self, db, model):
+                # your typical migration code here
+
+            def runpython_ok(self, apps, schema_editor, model):
+                db = schema_editor.connection.alias
+                if db is None:
+                    return True
+                if self.allow_migrate(db, model):
+                    return True
+                return False
+
+Then to leverage this in your migrations, do the following:
+
+        # -*- coding: utf-8 -*-
+        from __future__ import unicode_literals
+
+        from django.db import models, migrations
+        from yourappname.dbrouter import MyRouter
+        import sys
+
+        def deamon_default_ports(apps, schema_editor):
+
+            # only run this for the correct databases
+            Deaemon = apps.get_model("yourappname", "Deaemon")
+            if not MyRouter().runpython_ok(apps, schema_editor, Deaemon):
+                return
+
+            try:
+                deamon = Deaemon.objects.order_by("-id")[0]
+            except IndexError:
+                deamon = Deaemon.objects.create()
+            if deamon.deamon_ports == "":
+                deamon.deamon_ports = "80, 8080, 3128"
+                deamon.save()
+
+        def backwards(apps, schema_editor):
+            pass
+
+        class Migration(migrations.Migration):
+
+            dependencies = [
+                ('yourappname', '0005_auto_direction_and_indexes'),
+            ]
+
+            operations = [
+                migrations.RunPython(deamon_default_ports, backwards),
+            ]
+
+More advanced migrations
+~~~~~~~~~~~~~~~~~~~~~~~~
+
 If you're interested in the more advanced migration operations, or want
 to be able to write your own, see the :doc:`migration operations reference
 </ref/migration-operations>`.
