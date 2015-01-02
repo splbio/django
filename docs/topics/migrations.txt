@@ -476,10 +476,11 @@ not to run a migration when using multiple databases.
 For example, you may want to **only** run a migration against a particular
 database.
 
-In order to do that you can filter inside of your data migration by
-looking at the ``schema_editor.connection.alias`` attribute. However it is better
-to have your ``dbrouter`` leverage the same ``allow_migrate`` call by making
-the following method in your router::
+In order to do that you can filter inside of your data migration
+by looking at the ``schema_editor.connection.alias`` attribute.
+However it is better to have your ``dbrouter`` leverage the same
+``allow_migrate`` call by making the following method in your
+router::
 
         class MyRouter(object):
 
