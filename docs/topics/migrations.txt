@@ -510,6 +510,13 @@ Then to leverage this in your migrations, do the following::
             if not MyRouter().runpython_ok(apps, schema_editor, MyModel):
                 return
 
+            """
+            This is a global configuration model so there should be only
+            row.
+            Get the first one -or- create the initial one.
+            Only set the default ports if it has not been set by user
+            already.
+            """
             try:
                 my_model = MyModel.objects.order_by("-id")[0]
             except IndexError:
