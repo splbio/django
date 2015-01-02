@@ -472,71 +472,72 @@ backwards will raise an exception.
 Data migrations and multiple databases
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-One of the challenges that can be encountered is figuring out whether
-or not to run a migration when using multiple databases.
+One of the challenges that can be encountered is figuring out whether or not to
+run a migration when using multiple databases.
 
-For example, you may want to **only** run a migration against a
-particular database.
+For example, you may want to **only** run a migration against a particular
+database.
 
-In order to do that you can filter inside of your data migration
-by looking at the ``schema_editor.connection.alias`` attribute.
-However it is better to have your ``dbrouter`` leverage the same
-``allow_migrate`` call by making the following method in your
-router::
+In order to do that you can check the connection alias inside a ``RunPython``
+forwards and backwards operation by looking at the
+``schema_editor.connection.alias`` attribute.
 
-        class MyRouter(object):
+    # -*- coding: utf-8 -*-
+    from __future__ import unicode_literals
 
-            def allow_migrate(self, db, model):
-                # your typical migration code here
+    from django.db import migrations
 
-            def runpython_ok(self, apps, schema_editor, model):
-                db = schema_editor.connection.alias
-                if self.allow_migrate(db, model):
-                    return True
-                return False
+    def forwards(apps, schema_editor):
+        if not schema_editor.connection.alias == 'master-db':
+            return
+        # Your migration code goes here
 
-Then to leverage this in your migrations, do the following::
+    class Migration(migrations.Migration):
 
-        # -*- coding: utf-8 -*-
-        from __future__ import unicode_literals
+        dependencies = [
+            # Dependencies to other migrations
+        ]
 
-        from django.db import models, migrations
-        from myappname.dbrouter import MyRouter
-        import sys
+        operations = [
+            migrations.RunPython(forwards),
+        ]
 
-        def forwards(apps, schema_editor):
-            # only run this for the correct databases
-            MyModel = apps.get_model("myappname", "MyModel")
-            if not MyRouter().runpython_ok(apps, schema_editor, MyModel):
-                return
+You can also use your database router's ``allow_migrate`` method, but keep in
+mind that the imported router needs to stay around as long as it is referenced
+inside a migration:
 
-            """
-            This is a global configuration model so there should be only
-            row.
-            Get the first one -or- create the initial one.
-            Only set the default ports if it has not been set by user
-            already.
-            """
-            try:
-                my_model = MyModel.objects.order_by("-id").first()
-            except IndexError:
-                my_model = MyModel.objects.create()
-            if my_model.my_model_ports == "":
-                my_model.my_model_ports = "80, 8080, 3128"
-                my_model.save()
+.. snippet::
+    :filename: myapp/dbrouters.py
 
-        def backwards(apps, schema_editor):
-            pass
+    class MyRouter(object):
 
-        class Migration(migrations.Migration):
+        def allow_migrate(self, db, model):
+            return db == 'default':
 
-            dependencies = [
-                # Dependencies to other migrations
-            ]
+Then, to leverage this in your migrations, do the following::
 
-            operations = [
-                migrations.RunPython(forwards, backwards),
-            ]
+    # -*- coding: utf-8 -*-
+    from __future__ import unicode_literals
+
+    from django.db import models, migrations
+
+    from myappname.dbrouters import MyRouter
+
+    def forwards(apps, schema_editor):
+        MyModel = apps.get_model("myappname", "MyModel")
+        if not MyRouter().allow_migrate(schema_editor.connection.alias, MyModel):
+            return
+        # Your migration code goes here
+
+    class Migration(migrations.Migration):
+
+        dependencies = [
+            # Dependencies to other migrations
+        ]
+
+        operations = [
+            migrations.RunPython(forwards),
+        ]
 
 More advanced migrations
 ~~~~~~~~~~~~~~~~~~~~~~~~
