@@ -480,7 +480,7 @@ database.
 
 In order to do that you can check the connection alias inside a ``RunPython``
 forwards and backwards operation by looking at the
-``schema_editor.connection.alias`` attribute.
+``schema_editor.connection.alias`` attribute::
 
     from django.db import migrations
 
