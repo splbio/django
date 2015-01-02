@@ -163,4 +163,4 @@ connection is ``alias`` which can be used to determine the name of
 the database being accessed.
 
 This in turn is useful when doing data migrations for
-:ref:`migrations with multiple database backends <data_migrations_and_multiple_databases>`.
+:ref:`migrations with multiple database backends <data-migrations-and-multiple-databases>`.

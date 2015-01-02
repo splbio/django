@@ -467,7 +467,7 @@ You can pass a second callable to
 want executed when migrating backwards. If this callable is omitted, migrating
 backwards will raise an exception.
 
-.. _data_migrations_and_multiple_databases:
+.. _data-migrations-and-multiple-databases:
 
 Data migrations and multiple databases
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
