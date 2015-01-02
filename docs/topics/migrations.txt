@@ -505,7 +505,6 @@ Then to leverage this in your migrations, do the following::
         import sys
 
         def forwards(apps, schema_editor):
-
             # only run this for the correct databases
             YourModel = apps.get_model("yourappname", "YourModel")
             if not MyRouter().runpython_ok(apps, schema_editor, YourModel):
