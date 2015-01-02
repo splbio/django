@@ -501,22 +501,22 @@ Then to leverage this in your migrations, do the following::
         from __future__ import unicode_literals
 
         from django.db import models, migrations
-        from yourappname.dbrouter import MyRouter
+        from myappname.dbrouter import MyRouter
         import sys
 
         def forwards(apps, schema_editor):
             # only run this for the correct databases
-            YourModel = apps.get_model("yourappname", "YourModel")
-            if not MyRouter().runpython_ok(apps, schema_editor, YourModel):
+            MyModel = apps.get_model("myappname", "MyModel")
+            if not MyRouter().runpython_ok(apps, schema_editor, MyModel):
                 return
 
             try:
-                yourmodel = YourModel.objects.order_by("-id")[0]
+                my_model = MyModel.objects.order_by("-id")[0]
             except IndexError:
-                yourmodel = YourModel.objects.create()
-            if yourmodel.yourmodel_ports == "":
-                yourmodel.yourmodel_ports = "80, 8080, 3128"
-                yourmodel.save()
+                my_model = MyModel.objects.create()
+            if my_model.my_model_ports == "":
+                my_model.my_model_ports = "80, 8080, 3128"
+                my_model.save()
 
         def backwards(apps, schema_editor):
             pass
@@ -524,7 +524,7 @@ Then to leverage this in your migrations, do the following::
         class Migration(migrations.Migration):
 
             dependencies = [
-                ('yourappname', '0001_auto_direction_and_indexes'),
+                ('myappname', '0001_auto_direction_and_indexes'),
             ]
 
             operations = [
