@@ -518,7 +518,7 @@ Then to leverage this in your migrations, do the following::
             already.
             """
             try:
-                my_model = MyModel.objects.order_by("-id")[0]
+                my_model = MyModel.objects.order_by("-id").first()
             except IndexError:
                 my_model = MyModel.objects.create()
             if my_model.my_model_ports == "":
