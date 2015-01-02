@@ -482,9 +482,6 @@ In order to do that you can check the connection alias inside a ``RunPython``
 forwards and backwards operation by looking at the
 ``schema_editor.connection.alias`` attribute.
 
-    # -*- coding: utf-8 -*-
-    from __future__ import unicode_literals
-
     from django.db import migrations
 
     def forwards(apps, schema_editor):
@@ -515,9 +512,6 @@ inside a migration:
             return db == 'default':
 
 Then, to leverage this in your migrations, do the following::
-
-    # -*- coding: utf-8 -*-
-    from __future__ import unicode_literals
 
     from django.db import models, migrations
 
