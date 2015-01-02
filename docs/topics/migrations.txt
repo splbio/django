@@ -531,7 +531,7 @@ Then to leverage this in your migrations, do the following::
         class Migration(migrations.Migration):
 
             dependencies = [
-                ('myappname', '0001_auto_direction_and_indexes'),
+                # Dependencies to other migrations
             ]
 
             operations = [
