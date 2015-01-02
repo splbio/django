@@ -472,11 +472,11 @@ backwards will raise an exception.
 Data migrations and multiple databases
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-One of the challenges that can be encountered is figuring out whether or
-not to run a migration when using multiple databases.
+One of the challenges that can be encountered is figuring out whether
+or not to run a migration when using multiple databases.
 
-For example, you may want to **only** run a migration against a particular
-database.
+For example, you may want to **only** run a migration against a
+particular database.
 
 In order to do that you can filter inside of your data migration
 by looking at the ``schema_editor.connection.alias`` attribute.
